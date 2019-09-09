@@ -1,302 +1,232 @@
-        var motion;
-        var g = 1;
-        var start = 0;
-        var life = 2;
-        var level = 1;
-        var hits = 0;
-        var breaks = 0;
-        var curBreaks = 0;
-        var paddles = 0;
-        var m = 0;      
-        
-        function loop () {
-                bMotion();      
-                bBoundry();
-                checkCollsion();
-                checkWin(curBreaks);
-                scoreUpdate();
-                bgmusic();
-                
-                if (g == 1) {
-                        setTimeout(loop, 2);
-                       // window.requestAnimationFrame(loop);
-                }
-       }
+var vTopLeft = 0;
+var vTopCenter = 0;
+var vTopRight = 0;
+var vMiddleLeft = 0;
+var vMiddleCenter = 0;
+var vMiddleRight = 0;
+var vBottomLeft = 0;
+var vBottomCenter = 0;
+var vBottomRight = 0;
+var plays = 0;
 
-       function bgmusic() {
-               if (m == 0 ) {
-                new Audio('sounds/music.mp3').play()
-                m++;
-               }
-                
-       }
-
-       function scoreUpdate() {
-                var score = ((level * 50) + (hits * 5) + (breaks * 20) + (paddles * 100)) * 1000;
-                document.getElementById("total3").innerHTML = "Score: " + parseInt(score);
-                document.getElementById("score").innerHTML = parseInt(score);
-                document.getElementById("tScore").value = parseInt(score); 
-                
-       }
-
-       function checkWin() {
-                if (level <= 8) {
-                        brickNum = (level * 10);
-                } else {
-                        brickNum = 90;
-                }
-                var ball = document.getElementById("theball");
-                
-                if (brickNum == curBreaks) {
-                        level++;
-                        start = 0;
-                        curBreaks = 0;
-                        motion = "still";
-                        new Audio('sounds/win.mp3').play()
-                        ball.style.left = "50%";
-                        ball.style.bottom = "10%";
-                        document.getElementById("bHolder").innerHTML = "";
-                        createBrick();
-                        document.getElementById("total2").innerHTML = "Level: " + level;
-
-                }
-
-       }
-
-       function checkCollsion() {
-                let i = 1
-                if (level <= 8) {
-                        brickNum = (level * 10);
-                } else {
-                        brickNum = 90;
-                }
-               
-                while (i <= brickNum) {
-                        
-                        var r1 = document.getElementById("brick"+i).getBoundingClientRect();
-                        
-                        var r2 = document.getElementById("theball").getBoundingClientRect();
-
-                        
-                        if (r2.top <= r1.bottom && r2.left >= r1.left && r2.right <= r1.right && r2.bottom >= r1.top && document.getElementById("brick"+i).style.visibility !== "hidden") {
-                                document.getElementById("brick"+i).style.visibility = "hidden";
-                                breaks++;
-                                curBreaks++;
-                                new Audio('sounds/brick_hit.mp3').play()
-                                if (motion == "upright") {
-                                        motion = "downright";
-                                } else if (motion == "upleft") {
-                                        motion = "downleft";   
-                                } else if (motion == "downleft") {
-                                        motion = "upleft";
-                                } else if (motion == "downright") {
-                                        motion = "upright";
-                                }
-
-                                
-                        }
-                i++;
-                }
-
-       }
-
-
-       function createBrick() {
-                if (level <= 8) {
-                        brickNum = (level * 10);
-                } else {
-                        brickNum = 90;
-                }
-                
-                let i = 1;
-
-                while (i <= brickNum) {
-                        var name = 'brick' + i;
-                        document.getElementById("bHolder").innerHTML += "<img id=\"" + name + "\" class=\"brick\" src=\"img/brick.png\">";
-                i++;    
-                }
-
-                
-       }
-
-       function bMotion() {
-                if (motion == "upright") {
-                        ballUpRight();
-                } else if (motion == "downright") {
-                        ballDownRight();
-                } else if (motion == "upleft") {
-                        ballUpLeft();
-                } else if (motion == "downleft") {
-                        ballDownLeft();
-                } else if (motion == "still") {
-
-                }
-       }
-
-       function bBoundry() {  
-                var ball = document.getElementById("theball");
-                var screen = document.getElementById("tGame");
-                var paddle = document.getElementById("thepad");
-               if (parseInt(ball.style.top) <= 0) {
-                       hits++;
-                       new Audio('sounds/wall.mp3').play()
-                       if (motion == "upright") {
-                               motion = "downright";
-                               
-                       } else if (motion == "upleft") {
-                               motion = "downleft";
-                               
-                       }
-               } else if (parseInt(ball.style.left) + (ball.offsetWidth) > screen.offsetWidth) {
-                        new Audio('sounds/wall.mp3').play()
-                        hits++;
-                        if (motion == "upright") {
-                                motion = "upleft";
-                        } else if (motion == "downright") {
-                                motion = "downleft";   
-                        }
-               } else if (parseInt(ball.style.left) <= 0) {
-                        new Audio('sounds/wall.mp3').play()
-                        hits++;
-                        if (motion == "downleft") {
-                                motion = "downright";         
-                        } else if (motion == "upleft") {
-                                motion = "upright";
-                        }
-                       
-               } else if (parseInt(ball.style.top) + (ball.offsetHeight) >= (screen.offsetHeight - (screen.offsetHeight * 0.05))) {
-                        if (parseInt(ball.style.left) + ball.offsetWidth / 2 > parseInt(paddle.style.left) && parseInt(ball.style.left) + ball.offsetWidth / 2 < (parseInt(paddle.style.left) + paddle.offsetWidth )) {
-                               paddles++;
-                               new Audio('sounds/paddle_hit.mp3').play()
-                                if (motion == "downleft") {
-                                        motion = "upleft";
-                                } else if (motion == "downright") {
-                                        motion = "upright";
-                                }
-                       } else {
-                                if (life > 0) {
-                                        ball.style.left = "50%";
-                                        ball.style.bottom = "20%";
-                                        document.getElementById("total").innerHTML = "Lives: " + life--;
-                                        motion = "upright";
-                                        new Audio('sounds/life_lost.mp3').play()
-                                } else {
-                                        g = 0;
-                                        new Audio('sounds/win.mp3').play()
-                                        gameover();
-                                }
-                       }    
-               }
-       }
-
-       function ballspeed() {
-               if (level <= 2) {
-                       return 1;
-               } else if (level >=  3) {
-                       return 2;
-               }
-       }
-       function ballUpRight() {
-                var ball = document.getElementById("theball");
-                ball.style.top = parseInt(ball.style.top) - ballspeed() + 'px';
-                ball.style.left = parseInt(ball.style.left) + ballspeed() + 'px';
-       }
-
-       function ballDownRight() {
-                var ball = document.getElementById("theball");
-                ball.style.top = parseInt(ball.style.top) + ballspeed() + 'px';
-                ball.style.left = parseInt(ball.style.left) + ballspeed() + 'px';
-
-        }
-        function ballUpLeft() {
-                var ball = document.getElementById("theball");
-                ball.style.top = parseInt(ball.style.top) - ballspeed() + 'px';
-                ball.style.left = parseInt(ball.style.left) - ballspeed() + 'px';
-        }
-        function ballDownLeft() {
-                var ball = document.getElementById("theball");
-                ball.style.top = parseInt(ball.style.top) + ballspeed() + 'px';
-                ball.style.left = parseInt(ball.style.left) - ballspeed() + 'px';
-        }
-       
-
-        function leftArrowPressed() {
-        var element = document.getElementById("thepad");
-            if (parseInt(element.style.left) > 0) {
-                element.style.left = parseInt(element.style.left) - 10 + 'px';
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+              break;
             }
-           
+        }
+    }
+
+    function roboplay() {
+        x = Math.floor(Math.random() * 9) + 1
+        switch (x) {
+            case 1:
+            if (vTopLeft == 0) {
+                document.getElementById('topleft').style.backgroundImage="url(images/o.png)";
+                vTopLeft = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 2: 
+            if (vTopCenter == 0) {
+                document.getElementById('topcenter').style.backgroundImage="url(images/o.png)";
+                vTopCenter = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 3:
+            if (vTopRight == 0) {
+                document.getElementById('topright').style.backgroundImage="url(images/o.png)";
+                vTopRight = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 4: 
+            if (vMiddleLeft == 0) {
+                document.getElementById('middleleft').style.backgroundImage="url(images/o.png)";
+                vMiddleLeft = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 5:
+            if (vMiddleCenter == 0) {
+                document.getElementById('middlecenter').style.backgroundImage="url(images/o.png)";
+                vMiddleCenter = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 6:
+            if (vMiddleRight == 0) {
+                document.getElementById('middleright').style.backgroundImage="url(images/o.png)";
+                vMiddleRight = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 7:
+            if (vBottomLeft == 0) {
+                document.getElementById('bottomleft').style.backgroundImage="url(images/o.png)";
+                vBottomLeft = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 8:
+            if (vBottomCenter == 0) {
+                document.getElementById('bottomcenter').style.backgroundImage="url(images/o.png)";
+                vBottomCenter = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            case 9:
+            if (vBottomRight == 0) {
+                document.getElementById('bottomright').style.backgroundImage="url(images/o.png)";
+                vBottomRight = 2;
+                checkwin();
+            } else {
+                roboplay();
+            }
+            break;
+            }
+        }
+        function checkwin() {
+             if (vTopLeft == 1 && vTopCenter == 1 && vTopRight == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vMiddleLeft == 1 && vMiddleCenter == 1 && vMiddleRight == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vBottomLeft == 1 && vBottomCenter == 1 && vBottomRight == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopLeft == 1 && vMiddleLeft == 1 && vBottomLeft == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopCenter == 1 && vMiddleCenter == 1 && vBottomCenter == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopRight == 1 && vMiddleRight == 1 && vBottomRight == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopLeft == 1 && vMiddleCenter == 1 && vBottomRight == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopRight == 1 && vMiddleCenter == 1 && vBottomLeft == 1) {
+                document.getElementById("ptext").innerHTML = "Good job, you win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopLeft == 2 && vTopCenter == 2 && vTopRight == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vMiddleLeft == 2 && vMiddleCenter == 2 && vMiddleRight == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vBottomLeft == 2 && vBottomCenter == 2 && vBottomRight == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopLeft == 2 && vMiddleLeft == 2 && vBottomLeft == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopCenter == 2 && vMiddleCenter == 2 && vBottomCenter == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopRight == 2 && vMiddleRight == 2 && vBottomRight == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopLeft == 2 && vMiddleCenter == 2 && vBottomRight == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (vTopRight == 2 && vMiddleCenter == 2 && vBottomLeft == 2) {
+                document.getElementById("ptext").innerHTML = "Sorry, but you did not win!";
+                document.getElementById('popup').style.display = 'block';
+            } else if (plays == 5) {
+                document.getElementById("ptext").innerHTML = "Sorry it was a tie!";
+                document.getElementById('popup').style.display = 'block';
+            }
             
+
         }
+        function GoPlay(value, place, robo) {
+            if (robo == 2) {
+                
+            } else if (value == 0) { 
+                //Play the game
+                plays = plays + 1;
+                switch(place) {
+                    case 1:
+                    document.getElementById('topleft').style.backgroundImage="url(images/x.png)";
+                    vTopLeft = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 2:
+                    document.getElementById('topcenter').style.backgroundImage="url(images/x.png)";
+                    vTopCenter = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 3:
+                    document.getElementById('topright').style.backgroundImage="url(images/x.png)";
+                    vTopRight = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 4:
+                    document.getElementById('middleleft').style.backgroundImage="url(images/x.png)";
+                    vMiddleLeft = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 5:
+                    document.getElementById('middlecenter').style.backgroundImage="url(images/x.png)";
+                    vMiddleCenter = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 6:
+                    document.getElementById('middleright').style.backgroundImage="url(images/x.png)";
+                    vMiddleRight= 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 7:
+                    document.getElementById('bottomleft').style.backgroundImage="url(images/x.png)";
+                    vBottomLeft = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 8:
+                    document.getElementById('bottomcenter').style.backgroundImage="url(images/x.png)";
+                    vBottomCenter = 1;
+                    checkwin();
+                    roboplay();
+                    break;
+                    case 9:
+                    document.getElementById('bottomright').style.backgroundImage="url(images/x.png)";
+                    vBottomRight = 1;
+                    checkwin();
+                    roboplay();
+                    break;
 
-        function rightArrowPressed() {
-            var element = document.getElementById("thepad");
-            var screen = document.getElementById("tGame");
-            if (parseInt(element.style.left) + (element.offsetWidth) < screen.offsetWidth) {
-                element.style.left = parseInt(element.style.left) + 10 + 'px';
-
-                if (start == 0) {
-                        
-                        
-                        motion = "upright";
-                        
-                        start = 1;
-                        
-                        
                 }
-            }
-           
-
-        }
 
 
-        function moveSelection(evt) {
-            switch (evt.keyCode) {
-                case 37:
-                leftArrowPressed();
-                break;
-                case 39:
-                rightArrowPressed();
-                break;
-                }
-        };
-
-        function docReady() {
-                window.addEventListener('keydown', moveSelection);
-                
+            } else {
+                //Cannot be used
+            
+            } 
         }
-
-                
-        function gameover() {
-                document.getElementById("tGame").style.display = "none";
-                document.getElementById("gOver").style.display = "block";
-                
-        }
-        
-        function gStart() {
-                document.getElementById("sTart").style.display = "none";
-                document.getElementById("tGame").style.display = "block";
-                createBrick();
-                var ball = document.getElementById("theball");
-                ball.style.left = "50%";
-                ball.style.bottom = "20%";
-                motion = "still";
-                setTimeout(loop, 1000);
-        }
-
-        function gInfo() {
-                document.getElementById("sTart").style.display = "none";
-                document.getElementById("sInfo").style.display = "block";
-        }
-        function gMenu() {
-                document.getElementById("sTart").style.display = "block";
-                document.getElementById("sInfo").style.display = "none";
-        }
-
-        function gmMenu() {
-                document.getElementById("sTart").style.display = "block";
-                document.getElementById("gOver").style.display = "none";
-        }
-        
-        
-        
