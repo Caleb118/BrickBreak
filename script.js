@@ -419,7 +419,7 @@ function bBoundry() {
         } else if (parseInt(ball.style.top) + (ball.offsetHeight) >= (screen.offsetHeight - (screen.offsetHeight * 0.05))) {
 
                 // this if statement detects when the balls center hits the paddle
-                if (parseInt(ball.style.left) + ball.offsetWidth / 2 > parseInt(paddle.style.left) && parseInt(ball.style.left) + ball.offsetWidth / 2 < (parseInt(paddle.style.left) + paddle.offsetWidth )) {
+                if (parseInt(ball.style.left) + ball.offsetWidth / 2 > (parseInt(paddle.style.left) - 10) && parseInt(ball.style.left) + ball.offsetWidth / 2 < (parseInt(paddle.style.left) + paddle.offsetWidth + 10)) {
                         
                         //here we increment the paddle variable and play a paddle sounds
                         paddles++;
@@ -442,7 +442,7 @@ function bBoundry() {
                         //Here is the logic for the div hits, we first make sure the ball has hit in
                         //the div specified then we change the motion
 
-                        if (bC > pl.left && bC < pl.right) {
+                        if (bC > (pl.left - 20) && bC < pl.right) {
                                 motion = "upleft";     
                         } else if (bC > plm.left && bC < plm.right) {
                                 motion = "upleftc";
@@ -450,7 +450,7 @@ function bBoundry() {
                                 motion = "up";
                         } else if (bC > prm.left && bC < prm.right) {
                                 motion = "uprightc";
-                        } else if (bC > pr.left && bC < pr.right) {
+                        } else if (bC > pr.left && bC < (pr.right + 20)) {
                                 motion = "upright";
                         } 
 
@@ -583,10 +583,16 @@ function gStart() {
 ////////////////////////////////////////////////////////
 
 function gameover() {
+        document.getElementById("tScore").value = score;
         document.getElementById("tGame").style.display = "none";
         document.getElementById("gOver").style.display = "block";
+        document.getElementById("name").focus();
+        document.getElementById("name").select();
 }
-
+function gScores() {
+        document.getElementById("sTart").style.display = "none";
+        document.getElementById("gScores").style.display = "block";
+}
 function gInfo() {
         document.getElementById("sTart").style.display = "none";
         document.getElementById("sInfo").style.display = "block";
@@ -594,6 +600,10 @@ function gInfo() {
 function gMenu() {
         document.getElementById("sTart").style.display = "block";
         document.getElementById("sInfo").style.display = "none";
+}
+function gMenu2() {
+        document.getElementById("sTart").style.display = "block";
+        document.getElementById("gScores").style.display = "none";
 }
 
 function gmMenu() {

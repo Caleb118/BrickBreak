@@ -176,6 +176,12 @@
         font-size: 0.5vw;
         color: white;
     }
+    .scoreTable {
+        width: 70%;
+        margin-left: auto;
+        text-align: center;
+        margin-right: auto;
+    }
     .gButton {
         color: purple;
         background-color: transparent;
